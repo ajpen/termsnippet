@@ -1,7 +1,6 @@
 package core
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/boltdb/bolt"
 	"os/user"
@@ -14,7 +13,7 @@ const (
 )
 
 var (
-	appDataPath = nil
+	appDataPath string
 )
 
 func init() {
@@ -22,7 +21,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	appDataPath = home + '/' + appDataRelativePath
+	appDataPath = home + "/" + appDataRelativePath
 }
 
 func getHomeDirectory() (string, error) {
@@ -40,15 +39,16 @@ type SnippetDatabase struct {
 }
 
 func NewSnippetDatabase(dataPath string) (*SnippetDatabase, error) {
-	fd := &SnippetDatabase{DataPath: dataPath}
+	sd := &SnippetDatabase{DataPath: dataPath}
+	var err error
 
-	fd.DB, err = bolt.Open(dataPath, appDataFileMode, nil)
+	sd.DB, err = bolt.Open(dataPath, appDataFileMode, nil)
 	if err != nil {
 		panic(err)
 	}
 
-	err := fd.DB.Update(func(tx *bolt.Tx) error {
-		b, err := tx.CreateBucketIfNotExists([]byte(bucketName))
+	err = sd.DB.Update(func(tx *bolt.Tx) error {
+		_, err := tx.CreateBucketIfNotExists([]byte(bucketName))
 		if err != nil {
 			return err
 		}
@@ -59,22 +59,17 @@ func NewSnippetDatabase(dataPath string) (*SnippetDatabase, error) {
 		return nil, err
 	}
 
-	return fd, nil
+	return sd, nil
 }
 
 func (sd *SnippetDatabase) AddSnippet(s Snippet) error {
 
-	name, err := json.Marshal(s.Title)
+	name, snippetBlob, err := MarshalSnippetForStorage(s)
 	if err != nil {
 		return err
 	}
 
-	snippetBlob, err := json.Marshal(s)
-	if err != nil {
-		return err
-	}
-
-	err := sd.DB, Update(func(tx *bolt.Tx) error {
+	err = sd.DB.Update(func(tx *bolt.Tx) error {
 
 		b := tx.Bucket([]byte(bucketName))
 		if b == nil {
@@ -87,6 +82,25 @@ func (sd *SnippetDatabase) AddSnippet(s Snippet) error {
 		}
 
 		return nil
+	})
+
+	return err
+}
+
+func (sd *SnippetDatabase) UpdateSnippet(s Snippet) error {
+	return sd.AddSnippet(s)
+}
+
+func (sd *SnippetDatabase) DeleteSnippet(name string) error {
+	err := sd.DB.Update(func(tx *bolt.Tx) error {
+
+		b := tx.Bucket([]byte(bucketName))
+		if b == nil {
+			return fmt.Errorf("Data error:\nUnable to find data. Either it has been corrupted or removed unexpectedly.")
+		}
+
+		err := b.Delete([]byte(name))
+		return err
 	})
 
 	return err
