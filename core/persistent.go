@@ -12,18 +12,6 @@ const (
 	bucketName          = "snippets"
 )
 
-var (
-	appDataPath string
-)
-
-func init() {
-	home, err := getHomeDirectory()
-	if err != nil {
-		panic(err)
-	}
-	appDataPath = home + "/" + appDataRelativePath
-}
-
 func getHomeDirectory() (string, error) {
 	user, err := user.Current()
 	if err != nil {
@@ -33,14 +21,27 @@ func getHomeDirectory() (string, error) {
 	return user.HomeDir, nil
 }
 
+func DefaultAppDataPath() (string, error) {
+	home, err := getHomeDirectory()
+	if err != nil {
+		return "", err
+	}
+	appDataPath = home + "/" + appDataRelativePath, nil
+}
+
 type SnippetDatabase struct {
 	DB       *bolt.DB
 	DataPath string
 }
 
 func NewSnippetDatabase(dataPath string) (*SnippetDatabase, error) {
-	sd := &SnippetDatabase{DataPath: dataPath}
 	var err error
+
+	if dataPath == "" {
+		dataPath, err = DefaultAppDataPath()
+	}
+
+	sd := &SnippetDatabase{DataPath: dataPath}
 
 	sd.DB, err = bolt.Open(dataPath, appDataFileMode, nil)
 	if err != nil {
