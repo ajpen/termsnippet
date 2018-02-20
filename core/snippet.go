@@ -23,3 +23,20 @@ func MarshalSnippetForStorage(s Snippet) ([]byte, []byte, error) {
 
 	return name, snippetBlob, err
 }
+
+func UnmarshalSnippet(blob []byte) (Snippet, error) {
+
+	s := &Snippet{}
+	err := json.Unmarshal(blob, s)
+	return *s, err
+}
+
+func NewSnippet(title, description, body string) *Snippet {
+	now := time.Now()
+	s := new(Snippet)
+	s.Title = title
+	s.Body = body
+	s.Description = description
+	s.CreatedAt = now
+	return s
+}

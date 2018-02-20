@@ -26,7 +26,7 @@ func DefaultAppDataPath() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	appDataPath = home + "/" + appDataRelativePath, nil
+	return home + "/" + appDataRelativePath, nil
 }
 
 type SnippetDatabase struct {
@@ -61,6 +61,24 @@ func NewSnippetDatabase(dataPath string) (*SnippetDatabase, error) {
 	}
 
 	return sd, nil
+}
+
+func (sd *SnippetDatabase) GetSnippet(title string) (Snippet, error) {
+
+	var s Snippet
+	err := sd.DB.Update(func(tx *bolt.Tx) error {
+		var err error
+		b := tx.Bucket([]byte(bucketName))
+		if b == nil {
+			return fmt.Errorf("Data error:\nUnable to find data. Either it has been corrupted or removed unexpectedly.")
+		}
+
+		snippet := b.Get([]byte(title))
+		s, err = UnmarshalSnippet(snippet)
+		return err
+	})
+
+	return s, err
 }
 
 func (sd *SnippetDatabase) AddSnippet(s Snippet) error {
