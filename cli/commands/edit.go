@@ -19,6 +19,7 @@ func editSnippetCommand() cli.Command {
 			},
 		},
 		ArgsUsage: "Title (required) - Title of the snippet to update",
+
 		Action: func(c *cli.Context) *cli.ExitError {
 			var body, title, desc string
 			var err error

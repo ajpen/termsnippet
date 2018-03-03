@@ -1,20 +1,27 @@
 package core
 
 import (
-	"github.com/google/go-cmp/cmp"
 	"os"
 	"os/user"
 	"testing"
 	"time"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 var (
-	db                 *SnippetDatabase
 	defaultAppDataPath string
 	testAppPath        = "./test.db"
 	testSnippet        = Snippet{
 		Title:       "Test Snippet",
 		Body:        "randome stuff asdsadasdsda",
+		Description: "Stuff",
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
+	}
+	testSnippet2 = Snippet{
+		Title:       "Test_Snippet2",
+		Body:        "Updaasdasds stuff asdsadasdsda",
 		Description: "Stuff",
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
@@ -55,7 +62,7 @@ func TestDefaultDir(t *testing.T) {
 
 func TestDatabaseCreation(t *testing.T) {
 	var err error
-	db, err = NewSnippetDatabase(testAppPath)
+	_, err = NewSnippetDatabase(testAppPath)
 	if err != nil {
 		t.Error(err)
 	}
@@ -70,6 +77,7 @@ func TestGetAndAddSnippet(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+	defer os.Remove(testAppPath)
 
 	err = db.AddSnippet(testSnippet)
 	if err != nil {
@@ -80,13 +88,66 @@ func TestGetAndAddSnippet(t *testing.T) {
 	if err != nil {
 		t.Error("Failed to retrieve Snippet. It was not added properly, ", err)
 	}
+}
 
+func TestAllSnippet(t *testing.T) {
+	var passed = false
+	db, err := NewSnippetDatabase(testAppPath)
+	if err != nil {
+		t.Error(err)
+	}
+
+	defer os.Remove(testAppPath)
+
+	err = db.AddSnippet(testSnippet)
+	if err != nil {
+		t.Error("Failed to add Snippet, ", err)
+	}
+
+	err = db.AddSnippet(testSnippet2)
+	if err != nil {
+		t.Error("Failed to add Snippet, ", err)
+	}
+
+	snippets, e := db.AllSnippets()
+	if e != nil {
+		t.Error("Failed to retrieve all snippets, ", e)
+	}
+	var count = 0
+	for _, s := range snippets {
+		if s.Title == testSnippet.Title || s.Title == testSnippet2.Title {
+			passed = true
+		} else {
+			t.Errorf("Unexpected snippet %+v", s)
+			passed = false
+		}
+		count++
+	}
+	if count != 2 {
+		t.Errorf("snippet count is invalid: expected 2 got %d", count)
+	}
+	if !passed {
+		t.Fail()
+	}
 }
 
 func TestUpdateSnippet(t *testing.T) {
 
+	db, err := NewSnippetDatabase(testAppPath)
+	if err != nil {
+		t.Error(err)
+	}
+
+	defer os.Remove(testAppPath)
+
+	err = db.AddSnippet(testSnippet)
+	if err != nil {
+		t.Error("Failed to add Snippet, ", err)
+	}
+
 	var snippet Snippet
-	err := db.UpdateSnippet(testUpdateSnippet)
+
+	err = db.UpdateSnippet(testUpdateSnippet)
 	if err != nil {
 		t.Error("Failed to update Snippet, ", err)
 	}
@@ -104,8 +165,19 @@ func TestUpdateSnippet(t *testing.T) {
 }
 
 func TestDeleteSnippet(t *testing.T) {
+	db, err := NewSnippetDatabase(testAppPath)
+	if err != nil {
+		t.Error(err)
+	}
 
-	err := db.DeleteSnippet(testUpdateSnippet.Title)
+	defer os.Remove(testAppPath)
+
+	err = db.AddSnippet(testUpdateSnippet)
+	if err != nil {
+		t.Error("Failed to add Snippet, ", err)
+	}
+
+	err = db.DeleteSnippet(testUpdateSnippet.Title)
 
 	if err != nil {
 		t.Error("Unable to delete snippet, ", err)

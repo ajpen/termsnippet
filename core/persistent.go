@@ -2,8 +2,9 @@ package core
 
 import (
 	"fmt"
-	"github.com/boltdb/bolt"
 	"os/user"
+
+	"github.com/boltdb/bolt"
 )
 
 const (
@@ -70,7 +71,7 @@ func (sd *SnippetDatabase) GetSnippet(title string) (Snippet, error) {
 		var err error
 		b := tx.Bucket([]byte(bucketName))
 		if b == nil {
-			return fmt.Errorf("Data error:\nUnable to find data. Either it has been corrupted or removed unexpectedly.")
+			return fmt.Errorf("data error:\nunable to find data. either it has been corrupted or removed unexpectedly")
 		}
 
 		snippet := b.Get([]byte(title))
@@ -92,7 +93,7 @@ func (sd *SnippetDatabase) AddSnippet(s Snippet) error {
 
 		b := tx.Bucket([]byte(bucketName))
 		if b == nil {
-			return fmt.Errorf("Data error:\nUnable to find data. Either it has been corrupted or removed unexpectedly.")
+			return fmt.Errorf("data error:\nunable to find data. either it has been corrupted or removed unexpectedly")
 		}
 
 		err := b.Put(name, snippetBlob)
@@ -115,7 +116,7 @@ func (sd *SnippetDatabase) DeleteSnippet(name string) error {
 
 		b := tx.Bucket([]byte(bucketName))
 		if b == nil {
-			return fmt.Errorf("Data error:\nUnable to find data. Either it has been corrupted or removed unexpectedly.")
+			return fmt.Errorf("data error:\nunable to find data. either it has been corrupted or removed unexpectedly")
 		}
 
 		err := b.Delete([]byte(name))
@@ -123,4 +124,27 @@ func (sd *SnippetDatabase) DeleteSnippet(name string) error {
 	})
 
 	return err
+}
+
+func (sd *SnippetDatabase) AllSnippets() ([]Snippet, error) {
+	var snippets []Snippet
+	err := sd.DB.Update(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket([]byte(bucketName))
+		stats := bucket.Stats()
+		snippets = make([]Snippet, 0, stats.KeyN)
+		cursor := bucket.Cursor()
+
+		n, v := cursor.First()
+		for v != nil && n != nil {
+			snippet, e := UnmarshalSnippet(v)
+			if e != nil {
+				snippets = nil
+				return fmt.Errorf("Unable to retrieve all Snippets: %s", e)
+			}
+			snippets = append(snippets, snippet)
+			n, v = cursor.Next()
+		}
+		return nil
+	})
+	return snippets, err
 }
