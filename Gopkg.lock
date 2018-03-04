@@ -2,6 +2,12 @@
 
 
 [[projects]]
+  branch = "master"
+  name = "github.com/atotto/clipboard"
+  packages = ["."]
+  revision = "bc5958e1c8339112fc3347a89f3c482f416a69d3"
+
+[[projects]]
   name = "github.com/boltdb/bolt"
   packages = ["."]
   revision = "2f1ce7a837dcb8da3ec595b1dac9d0632f0f99e8"
@@ -33,6 +39,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "4c75a722bd06d05bbf5b7ab41cf112babd5272bd3d8097f45a9067d7f49d03be"
+  inputs-digest = "363234200558e72ec7948dee8b053c9a55f301b1e3b3afc890764ae3911ad3db"
   solver-name = "gps-cdcl"
   solver-version = 1
