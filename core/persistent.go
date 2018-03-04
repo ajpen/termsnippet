@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	appDataRelativePath = ".termsnippet/data/data.db"
+	appDataRelativePath = ".termsnippet/data"
 	appDataFileMode     = 0600
 	bucketName          = "snippets"
 )
@@ -22,7 +22,7 @@ func getHomeDirectory() (string, error) {
 	return user.HomeDir, nil
 }
 
-func DefaultAppDataPath() (string, error) {
+func defaultAppDataDir() (string, error) {
 	home, err := getHomeDirectory()
 	if err != nil {
 		return "", err
@@ -39,7 +39,7 @@ func NewSnippetDatabase(dataPath string) (*SnippetDatabase, error) {
 	var err error
 
 	if dataPath == "" {
-		dataPath, err = DefaultAppDataPath()
+		return nil, fmt.Errorf("Database path required for initialization!")
 	}
 
 	sd := &SnippetDatabase{DataPath: dataPath}

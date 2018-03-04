@@ -2,31 +2,44 @@ package core
 
 import (
 	"fmt"
+	"os"
+)
+
+const (
+	defaultDbName = "data.db"
 )
 
 var (
-	SnippetStore *SnippetDatabase
+	snippetStore *SnippetDatabase
 )
 
-func Init() {
-	defaultPath, err := DefaultAppDataPath()
+func init() {
+	defaultDataDir, err := defaultAppDataDir()
 	if err != nil {
-		panic(err)
+		panic(fmt.Errorf("Failed to initialize database: %s", err))
 	}
-	SnippetStore, err = NewSnippetDatabase(defaultPath)
+	if _, err := os.Stat(defaultDataDir); os.IsNotExist(err) {
+		err = os.MkdirAll(defaultDataDir, 0744)
+		if err != nil {
+			panic(fmt.Errorf("Failed to initialize database: %s", err))
+		}
+	}
+	fullDataPath := defaultDataDir + "/" + defaultDbName
+	sd, err := NewSnippetDatabase(fullDataPath)
 	if err != nil {
-		panic(err)
+		panic(fmt.Errorf("Failed to initialize database: %s", err))
 	}
+	snippetStore = sd
 }
 
 func GetSnippet(title string) (Snippet, error) {
-	s, e := SnippetStore.GetSnippet(title)
+	s, e := snippetStore.GetSnippet(title)
 	return s, e
 }
 
 func AddSnippet(title, description, body string) error {
 	s := NewSnippet(title, description, body)
-	return SnippetStore.AddSnippet(*s)
+	return snippetStore.AddSnippet(*s)
 }
 
 func RenameSnippet(oldTitle, newTitle string) error {
@@ -36,7 +49,7 @@ func RenameSnippet(oldTitle, newTitle string) error {
 	}
 
 	s.Title = newTitle
-	SnippetStore.UpdateSnippet(s)
+	snippetStore.UpdateSnippet(s)
 	return err
 }
 
@@ -47,7 +60,7 @@ func ChangeSnippetDescription(title, newDescription string) error {
 	}
 
 	s.Description = newDescription
-	SnippetStore.UpdateSnippet(s)
+	snippetStore.UpdateSnippet(s)
 	return err
 }
 
@@ -58,6 +71,14 @@ func EditSnippet(title, newBody string) error {
 	}
 
 	s.Body = newBody
-	SnippetStore.UpdateSnippet(s)
+	snippetStore.UpdateSnippet(s)
 	return err
+}
+
+func AllSnippets() ([]Snippet, error) {
+	return snippetStore.AllSnippets()
+}
+
+func DeleteSnippet(title string) error {
+	return snippetStore.DeleteSnippet(title)
 }
