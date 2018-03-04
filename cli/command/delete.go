@@ -29,7 +29,7 @@ func deleteSnippetCommand() cli.Command {
 			if err != nil {
 				return fmt.Errorf("Snippet %s does not exist", title)
 			}
-			fmt.Printf("Delete snippet %s?", snippet.Title)
+			fmt.Printf("Delete snippet %s? ", snippet.Title)
 			decision := strings.ToLower(readLine())
 			if decision == "y" || decision == "yes" {
 				err = core.DeleteSnippet(title)
@@ -37,6 +37,7 @@ func deleteSnippetCommand() cli.Command {
 			if err != nil {
 				return fmt.Errorf("Unable to delete snippet: %s", err)
 			}
+			fmt.Printf("Snippet %s deleted\n", title)
 			return nil
 		},
 	}
