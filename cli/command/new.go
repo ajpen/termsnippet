@@ -10,7 +10,7 @@ import (
 )
 
 func init() {
-	Commands = append(Commands, newSnippetCommand())
+	InstallCommand(newSnippetCommand())
 }
 
 func newSnippetCommand() cli.Command {

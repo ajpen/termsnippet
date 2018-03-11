@@ -9,7 +9,7 @@ import (
 )
 
 func init() {
-	Commands = append(Commands, clipSnippetCommand())
+	InstallCommand(clipSnippetCommand())
 }
 
 func clipSnippetCommand() cli.Command {

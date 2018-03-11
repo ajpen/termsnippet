@@ -1,10 +1,11 @@
 package command
 
 import (
+	Cli "termsnippet/cli"
+
 	"gopkg.in/urfave/cli.v1"
 )
 
-var (
-	//Commands list of all defined commands
-	Commands = make([]cli.Command, 0, 6)
-)
+func InstallCommand(c cli.Command) {
+	Cli.App.Commands = append(Cli.App.Commands, c)
+}

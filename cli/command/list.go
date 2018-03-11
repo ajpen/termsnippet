@@ -8,7 +8,7 @@ import (
 )
 
 func init() {
-	Commands = append(Commands, listSnippetCommand())
+	InstallCommand(listSnippetCommand())
 }
 
 const (

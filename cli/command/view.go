@@ -17,7 +17,7 @@ const (
 )
 
 func init() {
-	Commands = append(Commands, viewSnippetCommand())
+	InstallCommand(viewSnippetCommand())
 }
 
 func viewSnippetCommand() cli.Command {

@@ -9,7 +9,7 @@ import (
 )
 
 func init() {
-	Commands = append(Commands, editSnippetCommand())
+	InstallCommand(editSnippetCommand())
 }
 
 func editSnippetCommand() cli.Command {

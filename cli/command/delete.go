@@ -11,7 +11,7 @@ import (
 )
 
 func init() {
-	Commands = append(Commands, deleteSnippetCommand())
+	InstallCommand(deleteSnippetCommand())
 }
 
 func deleteSnippetCommand() cli.Command {
