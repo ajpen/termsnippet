@@ -46,20 +46,6 @@ func homeDir() string {
 	return user.HomeDir
 }
 
-func TestDefaultDir(t *testing.T) {
-
-	defaultDir, err := DefaultAppDataPath()
-	if err != nil {
-		t.Error(err)
-	}
-
-	home := homeDir()
-	expected := home + "/" + appDataRelativePath
-	if defaultDir != expected {
-		t.Errorf("DefaultAppDataPath does not return the expected string\nExpected: %s\nGot: %s ", expected, defaultDir)
-	}
-}
-
 func TestDatabaseCreation(t *testing.T) {
 	var err error
 	_, err = NewSnippetDatabase(testAppPath)

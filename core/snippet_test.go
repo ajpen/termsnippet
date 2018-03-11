@@ -2,9 +2,10 @@ package core
 
 import (
 	"encoding/json"
-	"github.com/google/go-cmp/cmp"
 	"testing"
 	"time"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 var (
@@ -27,7 +28,7 @@ func TestMarshalSnippetForStorage(t *testing.T) {
 	name, blob, err := MarshalSnippetForStorage(s)
 
 	if err != nil {
-		t.Error("Marshal failed: %s", err.Error())
+		t.Errorf("Marshal failed: %s", err.Error())
 	}
 
 	if string(name) != title {
@@ -45,7 +46,7 @@ func TestMarshalSnippetForStorage(t *testing.T) {
 
 	if !isEqual {
 		diff := cmp.Diff(*decodedBlob, s)
-		t.Error("snippet blob is not the same as original snippet\nDiff: %s", diff)
+		t.Errorf("snippet blob is not the same as original snippet\nDiff: %s", diff)
 	}
 
 }
