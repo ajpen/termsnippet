@@ -2,8 +2,9 @@ package command
 
 import (
 	"fmt"
-	"termsnippet/core"
-	"termsnippet/util"
+
+	"github.com/ajpen/termsnippet/core"
+	"github.com/ajpen/termsnippet/util"
 
 	"gopkg.in/urfave/cli.v1"
 )

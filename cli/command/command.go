@@ -1,7 +1,7 @@
 package command
 
 import (
-	Cli "termsnippet/cli"
+	Cli "github.com/ajpen/termsnippet/cli"
 
 	"gopkg.in/urfave/cli.v1"
 )

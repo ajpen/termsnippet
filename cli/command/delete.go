@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"termsnippet/core"
+
+	"github.com/ajpen/termsnippet/core"
 
 	"gopkg.in/urfave/cli.v1"
 )
