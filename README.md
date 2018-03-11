@@ -3,7 +3,9 @@ Copy useful snippets of code for later, right in the terminal
 
 ## Installation
 
-- Run `go get github.com/ajpen/termsnippet`. Termsnippet should then be installed as `termsnippet` in `/$GOPATH/bin`.
+- Run `go get github.com/ajpen/termsnippet`. 
+
+Termsnippet should then be installed as `termsnippet` in `/$GOPATH/bin`.
 
 Note: be sure to set `$EDITOR`; `termsnippet` relies on that environment variable to know what editor it should use when editing snippets or creating snippets.
 
