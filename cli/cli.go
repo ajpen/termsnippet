@@ -1,7 +1,22 @@
 package cli
 
 import (
+	"fmt"
+
 	"gopkg.in/urfave/cli.v1"
+)
+
+// Errors
+var (
+	// ArgumentMissingf returns an error message indicating a missing argument.
+	// argument: argument name
+	ErrArgumentMissing = func(argument string) error {
+		return fmt.Errorf("Missing required argument: %s", argument)
+	}
+
+	ErrDoesNotExist = func(lookingFor string) error {
+		return fmt.Errorf("Not Found: %s", lookingFor)
+	}
 )
 
 func init() {
@@ -15,3 +30,7 @@ func init() {
 var (
 	App = cli.NewApp()
 )
+
+func InstallCommand(c cli.Command) {
+	App.Commands = append(App.Commands, c)
+}
