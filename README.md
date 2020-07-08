@@ -1,5 +1,5 @@
 # Term Snippet
-Copy useful snippets of code for later, right in the terminal
+Copy useful snippets of text for later, right in the terminal
 
 ## Installation
 
